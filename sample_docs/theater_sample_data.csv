@@ -1,0 +1,4 @@
+ID,Name,Location,PricePerPerson,Description,Capacity,PricePerHour,Images,Video
+1,BingenFiesta Theater A,"Gachibowli, Hyderabad",299,Private theater with premium seating and Dolby sound.,15,1200,image1.jpg;image2.jpg,video1.mp4
+2,BingenFiesta Theater B,"Gachibowli, Hyderabad",349,Luxury private screen ideal for parties and screenings.,20,1500,image3.jpg;image4.jpg,video2.mp4
+3,BingenFiesta Mini Studio,"Gachibowli, Hyderabad",199,Cozy mini-theater suitable for couples and small groups.,6,800,image5.jpg;image6.jpg,video3.mp4
