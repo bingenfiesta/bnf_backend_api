@@ -41,6 +41,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "dotenv" },
     { name = "fastapi" },
+    { name = "pydantic" },
     { name = "pymongo" },
     { name = "uv" },
 ]
@@ -49,6 +50,7 @@ dependencies = [
 requires-dist = [
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "fastapi", specifier = ">=0.121.2" },
+    { name = "pydantic", specifier = ">=2.12.4" },
     { name = "pymongo", specifier = ">=4.15.4" },
     { name = "uv", specifier = ">=0.9.9" },
 ]
