@@ -1,20 +1,18 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 import csv
 from io import StringIO
-from config.db_config import MongoDBHandler
 from datetime import datetime
+from src.models.slot_model import Slot
 
 router = APIRouter(prefix="/api/slots", tags=["Slots"])
 
-# Initialize DB handler
-db_handler = MongoDBHandler(db_name="BNF", collection_name="Slot")
-db_handler.connect()
 
 @router.post("/upload_csv")
 async def upload_slot_csv(file: UploadFile = File(...)):
     """
-    Ingest theatres data from a CSV file into MongoDB.
-    Expected CSV headers: ID, Name, Location, PricePerPerson
+    Ingest slot data from a CSV file into MongoDB using Beanie ODM.
+    Expected CSV headers:
+    Name, Start (Date & Time), End, price, Theatre ID, Applied coupon (YES/NO)
     """
     try:
         content = await file.read()
@@ -23,19 +21,22 @@ async def upload_slot_csv(file: UploadFile = File(...)):
 
         slots = []
         for row in reader:
-            slot = {
-                "Name": row["Name"],
-                "End": datetime.strptime(row["End"],"%d-%m-%Y %H:%M"),
-                "Start": datetime.strptime(row["Start (Date & Time)"], "%d-%m-%Y %H:%M"),
-                "Coupon" : row["Applied coupon (YES/NO)"],
-                "Theatre" : row["Theatre ID"],
-                "Price" : row["price"]
-            }
-            slots.append(slot)
+            try:
+                slot = Slot(
+                    name=row.get("Name", ""),
+                    start=datetime.strptime(row.get("Start (Date & Time)", ""), "%d-%m-%Y %H:%M"),
+                    end=datetime.strptime(row.get("End", ""), "%d-%m-%Y %H:%M"),
+                    price=float(row.get("price", 0)),
+                    theatre_id=row.get("Theatre ID", ""),
+                    coupon=row.get("Applied coupon (YES/NO)", ""),
+                )
+                slots.append(slot)
+            except Exception as row_error:
+                raise HTTPException(status_code=400, detail=f"Invalid row data: {row_error}")
 
         if slots:
-            inserted_ids = db_handler.insert_many(slots)
-            return {"message": f"Inserted {len(inserted_ids)} slots successfully"}
+            await Slot.insert_many(slots)
+            return {"message": f"Inserted {len(slots)} slots successfully"}
         else:
             raise HTTPException(status_code=400, detail="CSV file is empty or invalid")
 

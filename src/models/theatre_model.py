@@ -1,28 +1,35 @@
+from beanie import Document
 from pydantic import BaseModel
-
+from typing import Optional, List
 
 class ProjectorDetails(BaseModel):
-    pass
+    brand: Optional[str] = None
+    resolution: Optional[str] = None
+    lumens: Optional[int] = None
 
 
 class SoundSystemDetails(BaseModel):
-    pass
+    brand: Optional[str] = None
+    channels: Optional[int] = None
+    power_watts: Optional[int] = None
 
 
 class Features(BaseModel):
-    # Note: Other classes need to be added for new features
-    projector: ProjectorDetails
-    sound_system: SoundSystemDetails
+    projector: Optional[ProjectorDetails] = None
+    sound_system: Optional[SoundSystemDetails] = None
 
 
-class Theatre(BaseModel):
+class Theatre(Document):
     ID: str
     name: str
-    description: str
+    description: Optional[str] = None
     location: str
     capacity: int
-    image: str
-    video: str
+    images: List[str] = []
+    video: Optional[str] = None
     base_price_per_hr: float
     price_per_person: float
-    features: Features
+    features: Optional[Features] = None
+
+    class Settings:
+        name = "theatres"

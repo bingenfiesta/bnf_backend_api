@@ -1,61 +1,78 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 import csv
 from io import StringIO
-from utils.db_operations.db_operations import MongoDBHandler
-from models.theatre import Theatre, Features, ProjectorDetails, SoundSystemDetails  # import your models
+from src.models.theatre_model import Theatre, Features, ProjectorDetails, SoundSystemDetails
 
 router = APIRouter(prefix="/api/theatres", tags=["Theatres"])
 
-# Initialize DB handler
-db_handler = MongoDBHandler(db_name="BNF", collection_name="Theatre")
-db_handler.connect()
+
+def safe_int(value, default=0):
+    try:
+        return int(value)
+    except Exception:
+        return default
+
+
+def safe_float(value, default=0.0):
+    try:
+        return float(value)
+    except Exception:
+        return default
+
 
 @router.post("/upload_csv")
-async def upload_theatres_csv(db_handler, file: UploadFile = File(...)):
+async def upload_theatres_csv(file: UploadFile = File(...)):
     """
-    Ingest theatres data from a CSV file into MongoDB.
-    Expected CSV headers: ID, Name, Description, Location, Capacity,
-    Images, Video, PricePerHour, PricePerPerson, ProjectorBrand, ProjectorResolution,
-    ProjectorLumens, SoundBrand, SoundChannels, SoundPower
+    Ingest theatres data from a CSV file into MongoDB using Beanie ODM.
+    Expected CSV headers:
+    ID, Name, Location, PricePerPerson, Description, Capacity, PricePerHour, Images, Video
     """
     try:
         content = await file.read()
-        decoded = content.decode("utf-8")
+        decoded = content.decode("utf-8-sig")  # handle BOM
         reader = csv.DictReader(StringIO(decoded))
+
+        # Normalize headers (strip BOM/whitespace)
+        reader.fieldnames = [name.strip().lstrip("\ufeff") for name in reader.fieldnames]
 
         theatres = []
         for row in reader:
             try:
+                print("Processing row:", row)  # DEBUG
+
+                images = row.get("Images", "")
+                image_list = images.split(";") if images else []
+
                 theatre = Theatre(
                     ID=row.get("ID", ""),
                     name=row.get("Name", ""),
                     description=row.get("Description", ""),
                     location=row.get("Location", ""),
-                    capacity=int(row.get("Capacity", 0)),
-                    image=row.get("Images", ""),
+                    capacity=safe_int(row.get("Capacity")),
+                    images=image_list,
                     video=row.get("Video", ""),
-                    base_price_per_hr=float(row.get("PricePerHour", 0)),
-                    price_per_person=float(row.get("PricePerPerson", 0)),
+                    base_price_per_hr=safe_float(row.get("PricePerHour")),   # map correctly
+                    price_per_person=safe_float(row.get("PricePerPerson")), # map correctly
                     features=Features(
-                        projector=ProjectorDetails(
-                            brand=row.get("ProjectorBrand", ""),
-                            resolution=row.get("ProjectorResolution", ""),
-                            lumens=int(row.get("ProjectorLumens", 0))
-                        ),
-                        sound_system=SoundSystemDetails(
-                            brand=row.get("SoundBrand", ""),
-                            channels=int(row.get("SoundChannels", 0)),
-                            power_watts=int(row.get("SoundPower", 0))
-                        )
+                        projector=ProjectorDetails(),
+                        sound_system=SoundSystemDetails()
                     )
                 )
-                theatres.append(theatre.dict())  # convert to dict for MongoDB
+
+                print("Parsed theatre object:", theatre.dict())  # DEBUG
+                theatres.append(theatre)
+
             except Exception as row_error:
-                raise HTTPException(status_code=400, detail=f"Invalid row data: {row_error}")
+                import traceback
+                print("Row error traceback:", traceback.format_exc())  # DEBUG
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid row data in row {row}: {row_error}"
+                )
 
         if theatres:
-            inserted_ids = db_handler.insert_many(theatres)
-            return {"message": f"Inserted {len(inserted_ids)} theatres successfully"}
+            await Theatre.insert_many(theatres)
+            return {"message": f"Inserted {len(theatres)} theatres successfully"}
         else:
             raise HTTPException(status_code=400, detail="CSV file is empty or invalid")
 
