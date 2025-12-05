@@ -3,8 +3,8 @@ from io import StringIO
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
-from models.theatre import (Features, ProjectorDetails,  # import your models
-                            SoundSystemDetails, Theatre)
+from models.theatre import ProjectorDetails  # import your models
+from models.theatre import Features, SoundSystemDetails, Theatre
 from utils.db_operations.db_operations import MongoDBHandler
 
 router = APIRouter(prefix="/api/theatres", tags=["Theatres"])
@@ -12,6 +12,7 @@ router = APIRouter(prefix="/api/theatres", tags=["Theatres"])
 # Initialize DB handler
 db_handler = MongoDBHandler(db_name="BNF", collection_name="Theatre")
 db_handler.connect()
+
 
 @router.post("/upload_csv")
 async def upload_theatres_csv(db_handler, file: UploadFile = File(...)):
@@ -43,14 +44,14 @@ async def upload_theatres_csv(db_handler, file: UploadFile = File(...)):
                         projector=ProjectorDetails(
                             brand=row.get("ProjectorBrand", ""),
                             resolution=row.get("ProjectorResolution", ""),
-                            lumens=int(row.get("ProjectorLumens", 0))
+                            lumens=int(row.get("ProjectorLumens", 0)),
                         ),
                         sound_system=SoundSystemDetails(
                             brand=row.get("SoundBrand", ""),
                             channels=int(row.get("SoundChannels", 0)),
-                            power_watts=int(row.get("SoundPower", 0))
-                        )
-                    )
+                            power_watts=int(row.get("SoundPower", 0)),
+                        ),
+                    ),
                 )
                 theatres.append(theatre.dict())  # convert to dict for MongoDB
             except Exception as row_error:

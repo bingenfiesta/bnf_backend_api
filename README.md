@@ -2,7 +2,7 @@
 
 ## How to setup
 
-Note: 
+Note:
 * Python 3.12 is being used to develop. Make sure you install the same for consistency.
 
 ### 1. Installing UV

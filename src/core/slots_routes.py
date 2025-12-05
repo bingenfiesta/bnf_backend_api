@@ -11,6 +11,7 @@ router = APIRouter(prefix="/api/slots", tags=["Slots"])
 db_handler = MongoDBHandler(db_name="BNF", collection_name="Slot")
 db_handler.connect()
 
+
 @router.post("/upload_csv")
 async def upload_slot_csv(file: UploadFile = File(...)):
     """
@@ -26,11 +27,11 @@ async def upload_slot_csv(file: UploadFile = File(...)):
         for row in reader:
             slot = {
                 "Name": row["Name"],
-                "End": datetime.strptime(row["End"],"%d-%m-%Y %H:%M"),
+                "End": datetime.strptime(row["End"], "%d-%m-%Y %H:%M"),
                 "Start": datetime.strptime(row["Start (Date & Time)"], "%d-%m-%Y %H:%M"),
-                "Coupon" : row["Applied coupon (YES/NO)"],
-                "Theatre" : row["Theatre ID"],
-                "Price" : row["price"]
+                "Coupon": row["Applied coupon (YES/NO)"],
+                "Theatre": row["Theatre ID"],
+                "Price": row["price"],
             }
             slots.append(slot)
 

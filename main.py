@@ -16,9 +16,7 @@ async def lifespan(app: FastAPI):
 
     # Initializing the DB Objects that can be reused
     for collection_name in Collections:
-        collection_name.value.connection = BnFMongoManager(
-            collection_name.value.collection_name
-        )
+        collection_name.value.connection = BnFMongoManager(collection_name.value.collection_name)
     yield
 
 
