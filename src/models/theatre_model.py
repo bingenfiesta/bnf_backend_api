@@ -2,11 +2,11 @@ from pydantic import BaseModel
 
 
 class ProjectorDetails(BaseModel):
-    pass
+    ID: str
 
 
 class SoundSystemDetails(BaseModel):
-    pass
+    ID: str
 
 
 class Features(BaseModel):
@@ -26,3 +26,12 @@ class Theatre(BaseModel):
     base_price_per_hr: float
     price_per_person: float
     features: Features
+
+
+class TheatresList(BaseModel):
+    theaters: list[Theatre]
+
+
+if __name__ == "__main__":
+    a = SoundSystemDetails(ID="1A")
+    print(a.model_validate())
