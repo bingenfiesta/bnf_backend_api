@@ -1,6 +1,7 @@
-from pymongo import MongoClient
 from os import getenv
+
 from bson.objectid import ObjectId
+from pymongo import MongoClient
 
 
 class BnFMongoManager:

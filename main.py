@@ -1,5 +1,7 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+
 from src.utils.constants import Collections
 from src.utils.db_operations.db_operations import BnFMongoManager
 

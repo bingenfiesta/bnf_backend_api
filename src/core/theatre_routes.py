@@ -1,8 +1,11 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
 import csv
 from io import StringIO
+
+from fastapi import APIRouter, File, HTTPException, UploadFile
+
+from models.theatre import (Features, ProjectorDetails,  # import your models
+                            SoundSystemDetails, Theatre)
 from utils.db_operations.db_operations import MongoDBHandler
-from models.theatre import Theatre, Features, ProjectorDetails, SoundSystemDetails  # import your models
 
 router = APIRouter(prefix="/api/theatres", tags=["Theatres"])
 

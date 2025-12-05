@@ -1,8 +1,9 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
 import csv
-from io import StringIO
-from config.db_config import MongoDBHandler
 from datetime import datetime
+from io import StringIO
+
+from config.db_config import MongoDBHandler
+from fastapi import APIRouter, File, HTTPException, UploadFile
 
 router = APIRouter(prefix="/api/slots", tags=["Slots"])
 
