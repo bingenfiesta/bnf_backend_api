@@ -11,8 +11,8 @@ class SoundSystemDetails(BaseModel):
 
 class Features(BaseModel):
     # Note: Other classes need to be added for new features
-    projector: ProjectorDetails
-    sound_system: SoundSystemDetails
+    projector: ProjectorDetails | None = None
+    sound_system: SoundSystemDetails| None = None
 
 
 class Theatre(BaseModel):
@@ -25,7 +25,8 @@ class Theatre(BaseModel):
     video: str
     base_price_per_hr: float
     price_per_person: float
-    features: Features
+    features: Features | None = None
+    delete: bool = False
 
 
 class TheatresList(BaseModel):

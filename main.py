@@ -3,13 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.utils.constants import Collections
-from src.utils.db_operations.db_operations import BnFMongoManager
+from utils.db_helper.db_helper import BnFMongoManager
 
-# from routes import (
-#     theatre_routes,
-#     slots_routes
-# )
-
+from src.routes import theatre_routes
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,7 +20,7 @@ app = FastAPI(title="Binge N Fiesta API service", version="0.1", lifespan=lifesp
 
 
 # Register routers
-# app.include_router(theatre_routes.router)
+app.include_router(theatre_routes.router)
 # app.include_router(slots_routes.router)
 
 
