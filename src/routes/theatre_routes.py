@@ -1,7 +1,7 @@
-from fastapi import APIRouter
-from src.models.theatre_model import Theatre, TheatresList
-from src.utils.constants import Collections
-from src.core.db_operations.theatre_operations import get_complete_theatre_list,add_new_theatre
+from fastapi import APIRouter, HTTPException
+from src.models.theatre_model import Theatre
+from src.core.db_operations.theatre_operations import get_complete_theatre_list,add_new_theatre, delete_theatre
+
 router = APIRouter(prefix="/theatre", tags=["Theatre Operations"])
 
 @router.get("/list")
@@ -19,5 +19,12 @@ def update_one(id:str):
 
 @router.delete("/{id}")
 def delete_one(id:str):
-    return {}
+    try:
+        result = delete_theatre(id)
+        if not result:
+            HTTPException(status_code=422, detail="Failed to Delete" )
+    except Exception as e:
+        HTTPException(status_code=500, detail=f"Failed to Delete : {str(e)}" )
+
+    return {"status": "success"}
 
