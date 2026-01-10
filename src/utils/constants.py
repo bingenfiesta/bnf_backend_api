@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from src.utils.db_operations.db_operations import BnFMongoManager
+from utils.db_helper.db_helper import BnFMongoManager
 
 
 @dataclass
