@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.utils.constants import Collections
-from utils.db_helper.db_helper import BnFMongoManager
+from src.utils.db_helper.db_helper import BnFMongoManager
 
 from src.routes import theatre_routes
 

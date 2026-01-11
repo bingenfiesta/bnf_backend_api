@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from utils.db_helper.db_helper import BnFMongoManager
-
+from src.utils.db_helper.db_helper import BnFMongoManager
 
 @dataclass
 class CollectionAttributes:
