@@ -1,28 +1,41 @@
 from pydantic import BaseModel
+from typing import Optional, List, Dict
 
-
+# -----------------------------
+# Feature Details (simple)
+# -----------------------------
 class ProjectorDetails(BaseModel):
-    pass
+    type: Optional[str] = None
+    resolution: Optional[str] = None
 
 
 class SoundSystemDetails(BaseModel):
-    pass
+    type: Optional[str] = None
+    speakers: Optional[int] = None
 
 
 class Features(BaseModel):
-    # Note: Other classes need to be added for new features
-    projector: ProjectorDetails
-    sound_system: SoundSystemDetails
+    projector: Optional[ProjectorDetails] = None
+    sound_system: Optional[SoundSystemDetails] = None
 
 
+# -----------------------------
+# Main Theatre Model
+# -----------------------------
 class Theatre(BaseModel):
-    ID: str
     name: str
     description: str
     location: str
     capacity: int
-    image: str
-    video: str
+
+    image: Optional[str] = None
+    video: Optional[str] = None
+
     base_price_per_hr: float
     price_per_person: float
-    features: Features
+
+    features: Optional[Features] = None
+
+    projector_detail: Optional[str] = None
+    sound_system: Optional[str] = None
+    others: Optional[str] = None
