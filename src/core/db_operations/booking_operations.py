@@ -6,7 +6,7 @@ from src.core.validators import validate_contact_number, validate_email, validat
 
 def get_bookings_list(start=0, page_size=10, page_num=1):
     skip_count = (page_num - 1) * page_size
-    converted_data = Collections.bookings.connection.get_records(skip_count=skip_count, page_size=page_size)
+    converted_data = Collections.bookings.value.connection.get_records(skip_count=skip_count, page_size=page_size)
     payload = {"bookings": converted_data}
     object_model = BookingList.model_validate(payload)
     return object_model.model_dump_json(indent=2)
@@ -22,17 +22,17 @@ def add_new_booking(booking: Booking):
         raise InputValidationFailedError("Number of people must be > 0")
 
     insertion = booking.model_dump()
-    return Collections.bookings.connection.insert_record(insertion)
+    return Collections.bookings.value.connection.insert_record(insertion)
 
 
 def delete_booking(id: str):
-    record = Collections.bookings.connection.get_record(id)
+    record = Collections.bookings.value.connection.get_record(id)
     if not record:
         raise DeletedItemFailedError("Item not found")
     if record.get('delete'):
         raise DeletedItemFailedError("Item already deleted")
 
-    count = Collections.bookings.connection.delete_record(id)
+    count = Collections.bookings.value.connection.delete_record(id)
     return True if count == 1 else False
 
 
@@ -47,5 +47,5 @@ def update_booking(id: str, updates: dict):
         if not validate_whole_number(updates['number_of_people']):
             raise InputValidationFailedError("Number of people must be > 0")
 
-    modified_count = Collections.bookings.connection.update_record(id, updates)
+    modified_count = Collections.bookings.value.connection.update_record(id, updates)
     return modified_count
